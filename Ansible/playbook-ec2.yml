@@ -1,0 +1,23 @@
+----
+- name: Launch EC2 Instance with Public IP
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Launch EC2 Instance
+      ec2_instance:
+        region: us-east-1
+        key_name: your-key-name
+        instance_type: t2.micro
+        image_id: ami-0abcdef1234567890
+        count: 1
+        network:
+          assign_public_ip: yes
+        security_groups: 
+          - your-security-group
+        tags:
+          Name: Ansible-EC2
+      register: ec2
+
+    - name: Show EC2 Public IP
+      debug:
+        msg: "Public IP: {{ ec2.instances[0].public_ip_address }}"

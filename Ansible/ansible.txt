@@ -20,11 +20,13 @@ ansible all -m copy -a "src=/etc/abc/index.html dest=/home/azureuser"
 
 ansible all -m apt -a "name=nginx state=present" # Installing packages
 
-ansible all -m apt -a apt "name=nginx state=latest" # Updating packages
+ansible all -m apt -a "name=nginx state=latest" # Updating packages
 
 ansible all -m service -a "name=nginx state=start/stop" # starts or stops service like nginx
 
 ansible all -m file -a "Path=/etc/ansible/hosts state=directory" # it creates a directory
 
 ansible all -m file -a "Path=/home/azureuser state=file" # It creates file
+
+ansible all -m shell -a "echo Hello, Ansible!"
 

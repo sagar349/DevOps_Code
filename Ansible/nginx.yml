@@ -1,0 +1,35 @@
+----
+- name: Use Ansible Built-in Modules
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: Ensure directory exists
+      ansible.builtin.file:
+        path: /home/azureuser/myfolder
+        state: directory
+        mode: '0755'
+
+    - name: Install nginx using apt
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+        update_cache: yes
+
+---
+- name:
+  hosts: all
+  become: yes
+  tasks:
+
+    - name:
+      ansible.builtin.file:
+        path: /home/myfolder
+        state: directory
+        mode: 700
+
+    - name: 
+      ansible.builtin.apt:
+      name: nginx
+      state: latest
+          
