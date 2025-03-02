@@ -1,0 +1,46 @@
+ansible-galaxy role init <Name of Role>
+# The ansible-galaxy init command creates a new role directory structure with the following subdirectories:
+# ansible-galaxy role Install <Name of Role> , It imports the role from the Ansible Galaxy website.
+
+# Roles can shared accross multiple projects and can be downloaded from the Ansible Galaxy website.
+# The Ansible Galaxy website is a repository for Ansible roles.
+
+# The role directory structure is as follows:
+# Vars is used for variables specific to the role.
+# Handlers is used for handlers specific to the role and it executes tasks when notified.
+# Tasks is used for tasks specific to the role.
+# (Defaults is used for default variables specific to the role , 
+# if we are not providing any value for the variable then the default value will be taken.)
+# Meta is used for metadata specific to the role.
+# Files is used for files specific and copied to the remote machine.
+# Templates is used for dynamic files specific to the role.
+---
+- hosts: all
+  become: true
+  roles:
+    - role  # We execute the role here for entire playbook
+
+# Ansible is a Idempotent in nature.
+# Means if we run the playbook multiple times it will not make any changes if the desired state is already achieved.
+# It will only make changes if the desired state is not achieved.
+# In ansible-galaxy we may find similar roles which helps us to use the roles in our playbook.
+# ansible-galaxy -h # To get the help of ansible-galaxy
+
+# when we import roles from galaxy it stores in .ansible/roles directory. 
+
+# when we create a resource by using ansible on cloud
+# we need to provide the credentials to the ansible to create the resource.
+# az login # To login to the azure account
+# when we create a resource by ansible the module should availabe on Control node.
+# The module creates on control node by using the following command:
+# ansible-galaxy collection install azure.azcollection
+# after collection is installed we can use the module to create the resource on azure.
+# Modules creates on control node and it sends API request to the azure to create the resource.
+# collection is a group of modules.
+# Azure SDK Provide libraries to create the resources on azure.
+
+# ansible-vault create <filename> # To create the encrypted file
+# ansible-vault edit <filename> # To edit the encrypted file
+# ansible-vault view <filename> # To view the encrypted file
+# ansible-vault encrypt <filename> # To encrypt the file
+# ansible-vault decrypt <filename> # To decrypt the file

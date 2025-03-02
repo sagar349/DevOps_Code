@@ -1,0 +1,30 @@
+ssh-copy-id -f "-o IdentyFile <Path of control Node private Key> azureuser@MN IP
+
+This is for password login : sudo nano /etc/ssh/sshd_config ( Uncomment the Password Auth )
+
+sudo systemctl restart ssh
+
+sudo passwd azureuser < provide password >
+
+ssh-copy-id azureuser@MN IP 
+
+/etc/ansible/hosts
+
+ansible -i inventory.ini -m ping all
+
+ansible-playbook -i inventory.ini  playbook.yaml
+
+ansible all -m command -a "df -h" # checking disk usage
+
+ansible all -m copy -a "src=/etc/abc/index.html dest=/home/azureuser" 
+
+ansible all -m apt -a "name=nginx state=present" # Installing packages
+
+ansible all -m apt -a apt "name=nginx state=latest" # Updating packages
+
+ansible all -m service -a "name=nginx state=start/stop" # starts or stops service like nginx
+
+ansible all -m file -a "Path=/etc/ansible/hosts state=directory" # it creates a directory
+
+ansible all -m file -a "Path=/home/azureuser state=file" # It creates file
+

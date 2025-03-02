@@ -1,0 +1,28 @@
+TO create a volume
+
+docker volume ls 
+docker volume create abc
+
+docker run -d --name nginx-container --mount source=abc,target=/app nginx-image # this mount the volume
+
+docker exec -it nginx-container /bin/bash # to login into container 
+
+docker inspect nginx-container # It will show you the IP and volume mount details
+
+docker volume inspect abc # It inspect the docker volume
+
+If we want to mount external volume to container , just add EBS to VM then mount that voolume in VM 
+Then attach that volume to the container
+
+docker network ls
+
+docker network create abc # it creates network
+
+docker run -d --name container --network abc nginx-image # create a container with network
+
+docker run -d --name volume-network --mount source=abc,target=/volume-network --network abc nginx
+
+docker inspect container container-name
+
+docker build -t first-dockerfile:latest
+
