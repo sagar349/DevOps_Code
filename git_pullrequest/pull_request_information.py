@@ -30,3 +30,5 @@ if response.status_code == 200:
 else:
     print(f"Failed to fetch pull requests: {response.status_code}")
     print(response.json())
+
+# This script fetches and displays pull request details from a GitHub repository using the GitHub API    
