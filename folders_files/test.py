@@ -1,8 +1,14 @@
 import os
 
-folder = input("Provide folder name: ").split
+def list_files_and_folders():
+    path = input("Enter folder path: ")
+    try:
+        for item in os.listdir(path):
+            print(item)
+    except FileNotFoundError:
+        print("Path not found!")
+    except PermissionError:
+        print("Permission denied!")
 
-for i in folder:
-    files = os.listdir(i)
-    for i in files:
-        print(i) 
+if __name__ == "__main__":
+    list_files_and_folders()
