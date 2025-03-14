@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-repo/your-app.git
+    targetRevision: main
+    path: your-app-directory
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: your-namespace
+  syncPolicy:
+    automated:
+      prune: true          # Delete resources not in Git
+      selfHeal: true       # Fix out-of-sync resources automatically
+    syncOptions:
+      - CreateNamespace=true
