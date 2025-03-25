@@ -1,0 +1,48 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-non-root-user
+spec:
+  validateFailureAction: Enforce  # Enforces the failure action at the policy level
+  rules:
+    - name: check-run-as-non-root
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "Containers must run as a non-root user."
+        pattern:
+          spec:
+            containers:
+              - securityContext:
+                  runAsUser: "!0"  # Ensures the UID is not 0 (root)
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-pod-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secure-app
+  template:
+    metadata:
+      labels:
+        app: secure-app
+    spec:
+      securityContext:
+        runAsNonRoot: true  # Ensures the pod is running as a non-root user
+        fsGroup: 2000  # Ensures that files created by the pod belong to a non-root group
+      containers:
+        - name: secure-container
+          image: your-image:latest
+          securityContext:
+            privileged: false 
+            runAsUser: 1000  # Non-root user
+            allowPrivilegeEscalation: false  # Disables privilege escalation
+            readOnlyRootFilesystem: true  # Makes the root filesystem read-only
+          ports:
+            - containerPort: 80

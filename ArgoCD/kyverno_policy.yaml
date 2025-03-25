@@ -18,3 +18,52 @@ spec:
             labels:
               app: ?*
               env: ?*
+
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-security-label
+spec:
+  rules:
+  - name: check-security-label
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Pod must have a security=high label"
+      pattern:
+        metadata:
+          labels:
+            security: "high"
+
+
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-cpu-memory-limits
+spec:
+  validateFailureAction: Enforce
+  rules:
+  - name: check-cpu-memory-limits
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "Pod must define both CPU and memory requests and limits"
+      pattern:
+        spec:
+          containers:
+          - resources:
+              requests:
+                cpu: "?*"
+                memory: "?*"
+              limits:
+                cpu: "?*"
+                memory: "?*"
+
+
+      
+

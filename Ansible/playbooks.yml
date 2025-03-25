@@ -1,0 +1,100 @@
+---
+# 1. User Management
+- name: Manage Users
+  hosts: all
+  tasks:
+    - name: Create a user
+      ansible.builtin.user:
+        name: devops
+        state: present
+
+---
+# 2. Package Installation
+- name: Install Packages
+  hosts: all
+  tasks:
+    - name: Install Nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
+---
+# 3. Service Management
+- name: Manage Services
+  hosts: all
+  tasks:
+    - name: Ensure Nginx is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
+
+---
+# 4. File Management
+- name: Manage Files
+  hosts: all
+  tasks:
+    - name: Copy a file
+      ansible.builtin.copy:
+        src: myfile.txt
+        dest: /tmp/myfile.txt
+
+---
+# 5. Configuration Management
+- name: Deploy Configurations
+  hosts: all
+  tasks:
+    - name: Deploy a template
+      ansible.builtin.template:
+        src: config.j2
+        dest: /etc/myconfig.conf
+
+---
+# 6. Docker Deployment
+- name: Deploy Docker Containers
+  hosts: all
+  tasks:
+    - name: Run a Docker container
+      community.docker.docker_container:
+        name: myapp
+        image: nginx
+        state: started
+
+---
+# 7. Kubernetes Deployment
+- name: Deploy to Kubernetes
+  hosts: localhost
+  tasks:
+    - name: Apply Kubernetes manifests
+      ansible.builtin.command: kubectl apply -f k8s-deployment.yaml
+
+---
+# 8. System Updates
+- name: Update System
+  hosts: all
+  tasks:
+    - name: Update all packages
+      ansible.builtin.package:
+        name: '*'
+        state: latest
+
+---
+# 9. Firewall & Security
+- name: Configure Firewall
+  hosts: all
+  tasks:
+    - name: Allow HTTP traffic
+      ansible.builtin.firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+
+---
+# 10. Backup & Restore
+- name: Backup and Restore
+  hosts: all
+  tasks:
+    - name: Create a backup
+      ansible.builtin.archive:
+        path: /var/www/html
+        dest: /backup/site.tar.gz
