@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+    
+    environment {
+        REGISTRY = "your-docker-registry"
+        IMAGE_NAME = "your-image-name"
+        VERSION = "latest"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Unit Test') {
+            steps {
+                script {
+                    // Run unit tests (example for a Node.js project)
+                    sh 'npm install'
+                    sh 'npm test'
+                }
+            }
+        }
+        
+        stage('Static Code Analysis') {
+            steps {
+                script {
+                    // Run static code analysis (example for SonarQube)
+                    sh 'sonar-scanner'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Build Docker image
+                    sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${VERSION} ."
+                }
+            }
+        }
+
+        stage('Push') {
+            steps {
+                script {
+                    // Push Docker image to registry
+                    sh "docker push ${REGISTRY}/${IMAGE_NAME}:${VERSION}"
+                }
+            }
+        }
+
+        stage('Update Manifest') {
+            steps {
+                script {
+                    // Update Kubernetes manifest with new image version
+                    sh "sed -i 's|${IMAGE_NAME}:.*|${REGISTRY}/${IMAGE_NAME}:${VERSION}|g' k8s/deployment.yaml"
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes with ArgoCD') {
+            steps {
+                script {
+                    // Trigger ArgoCD to sync the application
+                    sh "argocd app sync your-argocd-app-name"
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Pipeline executed successfully'
+        }
+        failure {
+            echo 'Pipeline execution failed'
+        }
+    }
+}

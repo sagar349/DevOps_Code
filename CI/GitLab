@@ -1,0 +1,54 @@
+stages:
+  - checkout
+  - unit_test
+  - static_code_analysis
+  - build
+  - push
+  - update_manifest
+  - deploy
+
+variables:
+  REGISTRY: "your-docker-registry"
+  IMAGE_NAME: "your-image-name"
+  VERSION: "latest"
+
+before_script:
+  - export PATH=$PATH:/usr/local/bin
+
+checkout:
+  stage: checkout
+  script:
+    - git clone https://your-repository-url.git
+
+unit_test:
+  stage: unit_test
+  script:
+    - npm install
+    - npm test
+
+static_code_analysis:
+  stage: static_code_analysis
+  script:
+    - sonar-scanner
+
+build:
+  stage: build
+  script:
+    - docker build -t $REGISTRY/$IMAGE_NAME:$VERSION .
+
+push:
+  stage: push
+  script:
+    - docker push $REGISTRY/$IMAGE_NAME:$VERSION
+
+update_manifest:
+  stage: update_manifest
+  script:
+    - sed -i "s|$IMAGE_NAME:.*|$REGISTRY/$IMAGE_NAME:$VERSION|g" k8s/deployment.yaml
+
+deploy:
+  stage: deploy
+  script:
+    - argocd app sync your-argocd-app-name
+  only:
+    - master

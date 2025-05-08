@@ -98,3 +98,21 @@
       ansible.builtin.archive:
         path: /var/www/html
         dest: /backup/site.tar.gz
+
+
+---
+# It will install three packages with loop
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nginx
+    - git
+    - curl
+
+ # We need to refer here   
+- hosts: all
+  become: yes
+  tasks:
+    - include_tasks: loop-file.yml    
