@@ -1,0 +1,54 @@
+stages:
+  - unit_test
+  - static_code_analysis
+  - build
+  - push
+  - update_manisfest
+  - deploy
+
+variables:
+  DOCKER_REGISTRY:
+  IMAGE_NAME:
+  VERSION: "latest"
+
+before_script:
+  - 
+
+unit_test:
+  stage: unit_test
+  script:
+  - npm install
+  - npm test
+
+stati_code_analysis:
+  stage: static_code_analysis
+  script:
+  - sonar-scanner
+
+build:
+  stage: build
+  script: 
+  - docker build -t Dockerfile .
+
+push:
+  stage: push
+  script:
+  - docker push <DOCKER_REGISTR IMAGE_NAME VERSION>
+
+update_manisfest:
+  stage: update_manisfest
+  script:
+  - sed -i "Details"
+
+deploy:
+  stage: deploy
+  script:
+  - argocd app sync <app_name>
+  only:
+  - main 
+
+
+
+
+
+

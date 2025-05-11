@@ -115,4 +115,23 @@
 - hosts: all
   become: yes
   tasks:
-    - include_tasks: loop-file.yml    
+    - include_tasks: loop-file.yml
+    
+
+- name: Launch multiple EC2 instances
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Launch EC2 instances
+      amazon.aws.ec2_instance:
+        name: "{{ item.name }}"
+        key_name: my-key
+        instance_type: "{{ item.type }}"
+        image_id: ami-0abcdef1234567890
+        region: us-east-1
+        wait: yes
+        count: 1
+      loop:
+        - { name: "web-server-1", type: "t2.micro" }
+        - { name: "web-server-2", type: "t2.micro" }
