@@ -135,3 +135,37 @@
       loop:
         - { name: "web-server-1", type: "t2.micro" }
         - { name: "web-server-2", type: "t2.micro" }
+
+- name: Create multiple users
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - alice
+    - bob
+    - charlie
+
+# conditional failure by using failed_when
+- name: Check if a file exists
+  ansible.builtin.stat:
+    path: /path/to/file.txt
+  register: file_status
+  failed_when: file_status.stat.exists == false # fails the task if file does not exists
+
+# block , rescue and always
+tasks:
+  - block:
+      - name: Try to install nginx
+        apt:
+          name: nginx
+          state: present
+    rescue:
+      - name: Print failure message
+        debug:
+          msg: "Nginx installation failed, trying something else"
+    always:
+      - name: Always runs
+        debug:
+          msg: "This will run whether block fails or not"
+          
+

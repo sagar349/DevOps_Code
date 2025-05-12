@@ -52,3 +52,15 @@ deploy:
     - argocd app sync your-argocd-app-name
   only:
     - master
+
+
+
+deploy:
+  stage: deploy
+  image: alpine/helm:3.7.1
+  script:
+    - helm repo add my-repo https://charts.example.com
+    - helm repo update
+    - helm upgrade --install my-app my-repo/my-chart --namespace my-namespace --values values.yaml
+  only:
+    - main
