@@ -3,6 +3,7 @@ stages:
   - unit_test
   - static_code_analysis
   - build
+  - trivy_scan
   - push
   - update_manifest
   - deploy
@@ -33,11 +34,27 @@ static_code_analysis:
 
 build:
   stage: build
+  tags:
+  - runner-docker
   script:
     - docker build -t $REGISTRY/$IMAGE_NAME:$VERSION .
 
+trivy_scan:
+  stage: security_scan
+  tags:
+  - runner-security
+  image:
+    name: aquasec/trivy:latest
+    entrypoint: [""]
+
+  script:
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL your-image:tag
+
+
 push:
   stage: push
+  tags:
+  - runner-security
   script:
     - docker push $REGISTRY/$IMAGE_NAME:$VERSION
 
@@ -52,8 +69,6 @@ deploy:
     - argocd app sync your-argocd-app-name
   only:
     - master
-
-
 
 deploy:
   stage: deploy

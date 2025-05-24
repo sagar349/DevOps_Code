@@ -164,8 +164,9 @@ tasks:
         debug:
           msg: "Nginx installation failed, trying something else"
     always:
-      - name: Always runs
-        debug:
-          msg: "This will run whether block fails or not"
+      - name: clean up Files
+        ansible.builtin.file:
+          path: /path/to/temp/files
+          state: absent
           
 

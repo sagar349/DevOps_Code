@@ -41,7 +41,14 @@ pipeline {
                 }
             }
         }
-
+        stage('Trivy Scan') {
+    steps {
+        // Pull Trivy image and run scan on the built image
+        sh '''
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --exit-code 1 --severity HIGH,CRITICAL your-image:tag
+        '''
+    }
+}
         stage('Push') {
             steps {
                 script {
@@ -79,3 +86,37 @@ pipeline {
         }
     }
 }
+
+
+# multi agent for Jenkins
+pipeline {
+  agent none
+
+  stages {
+    stage('Build') {
+      agent { label 'build-agent' }
+      steps {
+        echo 'Building the application...'
+        // Your build commands here
+      }
+    }
+
+    stage('Push') {
+      agent { label 'push-agent' }
+      steps {
+        echo 'Pushing the Docker image...'
+        // Your push commands here
+      }
+    }
+  }
+}
+
+
+#Java (using Maven):
+#Build project: mvn clean install
+#Run application: java -jar target/your-app.jar
+
+#Python:
+#Install dependencies: pip install -r requirements.txt
+#Run application/script: python script.py (or python3 script.py)
+
