@@ -1,0 +1,80 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE_TAG = "${env.BUILD_NUMBER}"
+    REPO = "your-ecr-repo"
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Detect Environment') {
+      steps {
+        script {
+          if (env.GIT_BRANCH == 'origin/dev') {
+            env.ENV = 'dev'
+            # if branch is dev , simply use dev folder source code to run pipeline
+          } else if (env.GIT_BRANCH == 'origin/stage') {
+            env.ENV = 'stage'
+          } else if (env.GIT_BRANCH == 'origin/main') {
+            env.ENV = 'prod'
+          } else {
+            error("Unknown branch: ${env.GIT_BRANCH}")
+          }
+        }
+      }
+    }
+
+    stage('Build & Push Docker Image') {
+      steps {
+        sh """
+          docker build -t $REPO:$IMAGE_TAG .
+          docker push $REPO:$IMAGE_TAG
+        """
+      }
+    }
+
+    stage('Update K8s Manifest') {
+      steps {
+        sh """
+          sed -i 's|IMAGE_TAG_PLACEHOLDER|$IMAGE_TAG|' ${env.ENV}/k8s-manifests/deployment.yaml
+          git config user.email "ci@example.com"
+          git config user.name "CI"
+          git commit -am "Update image tag to $IMAGE_TAG"
+          git push origin ${env.GIT_BRANCH}
+        """
+      }
+    }
+
+    stage('Trigger ArgoCD Sync') {
+      steps {
+        echo "ArgoCD will auto-sync ${env.ENV} environment"
+      }
+    }
+  }
+}
+
+
+Real-Time Rollback Layers end-to-end CI/CD rollback:
+
+1. Kubernetes-level:
+Auto rollback by using the previous healthy ReplicaSet when probes fail
+No traffic is sent to bad pods
+
+2. Git-level:
+Revert to a stable commit, update image/tag or config.
+Triggers redeploy via ArgoCD.
+
+3. ArgoCD-level:
+Use ArgoCD's UI "rollback" feature to redeploy a previous Git revision or sync wave
+Handy when Git revert isn't ideal immediately.
+
+4. CI/CD Pipeline-level
+Use pipeline scripts to automatically rollback based on alerts/health checks
+e.g., failed smoke tests after deploy
