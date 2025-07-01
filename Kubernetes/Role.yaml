@@ -1,0 +1,61 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get"]
+
+
+
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods-default
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: my-sa            # Replace with your ServiceAccount name
+  namespace: default     # Namespace where the SA exists
+roleRef:
+  kind: Role             # Or ClusterRole, if referring to ClusterRole
+  name: pod-reader       # Role or ClusterRole name
+  apiGroup: rbac.authorization.k8s.io
+
+
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-sa
+  namespace: default
+
+
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+
+
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: read-pods-binding
+subjects:
+- kind: ServiceAccount
+  name: my-sa                 # Replace with your SA name
+  namespace: default          # Namespace where the SA exists
+roleRef:
+  kind: ClusterRole
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+

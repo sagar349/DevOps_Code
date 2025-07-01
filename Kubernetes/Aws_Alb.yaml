@@ -1,0 +1,38 @@
+# Associate IAM OIDC provider
+
+# Create IAM policy for the controller
+
+# Create IAM Role for the controller (with IRSA)
+
+# Add Helm repo and install controller
+
+#After those 4 steps, the controller is fully set up and ALB creation is enabled 
+# when you apply Ingress with ingressClassName: alb
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  namespace: default
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+spec:
+  ingressClassName: alb
+  rules:
+  - host: myapp.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-service
+            port:
+              number: 80
+
+
+
+
+# Each Kubernetes Service becomes a target group behind the scenes
